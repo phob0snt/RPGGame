@@ -1,9 +1,6 @@
 using UnityEngine;
 
-public class Sword : BaseItem, IWeapon
+public class Sword : BaseItem
 {
-    public void Attack()
-    {
-        Debug.Log("Sword Attack");
-    }
+
 }

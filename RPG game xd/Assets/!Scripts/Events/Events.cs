@@ -18,6 +18,8 @@ public static class Events
     public static BlockEndedEvent BlockEndedEvent = new();
     public static MagicStartedEvent MagicStartedEvent = new();
     public static MagicEndedEvent MagicEndedEvent = new();
+    public static EscPressEvent EscPressEvent = new();
+    public static SaveAndQuitEvent SaveAndQuitEvent = new();
 }
 
 public class RunEvent : GameEvent {}
@@ -50,6 +52,16 @@ public class BlockEndedEvent : GameEvent {}
 public class MagicStartedEvent : GameEvent {}
 public class MagicEndedEvent : GameEvent {}
 
+public class PlayerStatsChangedEvent : GameEvent
+{
+    public int MaxHp;
+    public int CurrentHp;   
+}
+
+public class LoadSceneEvent : GameEvent {}
+public class SceneLoadedEvent : GameEvent {}
+public class EscPressEvent : GameEvent {}
+public class SaveAndQuitEvent : GameEvent {}
 //public class StartDialogueEvent : GameEvent
 //{
 //    public Dialogue Dialogue;

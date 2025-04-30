@@ -16,6 +16,7 @@ public class InputManager : IInputManager, IAsyncInitializable
     private InputAction _jump;
     private InputAction _block;
     private InputAction _run;
+    private InputAction _esc;
 
 
     public InputManager(IAssetLoader loader)
@@ -34,6 +35,7 @@ public class InputManager : IInputManager, IAsyncInitializable
         _jump = _inputActionAsset.FindAction("Jump");
         _block = _inputActionAsset.FindAction("Block");
         _run = _inputActionAsset.FindAction("Run");
+        _esc = _inputActionAsset.FindAction("Esc");
 
         _inputActionAsset.Enable();
 
@@ -49,12 +51,19 @@ public class InputManager : IInputManager, IAsyncInitializable
         _block.performed += PressBlock;
         _block.canceled += PressBlock;
         _run.performed += PressRun;
+        _esc.performed += PressEsc;
     }
 
     private void PressRun(InputAction.CallbackContext context)
     {
         if (context.ReadValueAsButton())
             EventManager.Broadcast(Events.RunEvent);
+    }
+
+    private void PressEsc(InputAction.CallbackContext context)
+    {
+        if (context.ReadValueAsButton())
+            EventManager.Broadcast(Events.EscPressEvent);
     }
 
     private void PressBlock(InputAction.CallbackContext context)
