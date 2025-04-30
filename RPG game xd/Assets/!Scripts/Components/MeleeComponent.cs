@@ -1,32 +1,44 @@
 using System;
-using System.Threading.Tasks;
+using System.Linq;
+using R3;
 using UnityEngine;
 
 public class MeleeComponent : EntityComponent
 {
     [SerializeField] private Sword _sword;
-    private event Action<AttackStartedEvent> _attackStarted;
-    private event Action<AttackEndedEvent> _attackEnded;
+    [SerializeField] private BoxCollider _attackCollider;
+    private IDisposable _attackStartedSubscription;
+    private IDisposable _attackEndedSubscription;
+    private int _damage;
 
-    private void Awake()
+    public void Initialize(int damage)
     {
-        _attackStarted = (e) => _sword.gameObject.SetActive(true);
-        _attackEnded = (e) => _sword.gameObject.SetActive(false);
+        _damage = damage;
     }
+    
     private void OnEnable()
     {
-        EventManager.AddListener(_attackStarted);
-        EventManager.AddListener(_attackEnded);
+        _attackStartedSubscription = EventManager.Recieve<AttackStartedEvent>().Subscribe((e) => _sword.Enable());
+        _attackEndedSubscription = EventManager.Recieve<AttackEndedEvent>().Subscribe((e) => _sword.Disable());
     }
 
     private void OnDisable()
     {
-        EventManager.RemoveListener(_attackStarted);
-        EventManager.RemoveListener(_attackEnded);
+        _attackStartedSubscription?.Dispose();
+        _attackEndedSubscription?.Dispose();
+        _attackStartedSubscription = null;
+        _attackEndedSubscription = null;
     }
 
     public void MeleeAttack()
     {
-        _sword.Attack();
+        Collider component = Physics.OverlapBox(_attackCollider.bounds.center, _attackCollider.bounds.extents, Quaternion.identity)
+            .FirstOrDefault(c => c.TryGetComponent(out Health hp) && hp.GetComponent<IEntity>() != GetComponent<IEntity>());
+            
+        if (component == null) return;
+
+        Health health = component.GetComponent<Health>();
+        
+        health?.TakeDamage(_damage);
     }
 }

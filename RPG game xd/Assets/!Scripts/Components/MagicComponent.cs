@@ -1,31 +1,34 @@
 using System;
+using R3;
 using UnityEngine;
 
 public class MagicComponent : EntityComponent
 {
     [SerializeField] private MagicSpell _spell;
     [SerializeField] private Transform _castRoot;
-
-    private event Action<MagicStartedEvent> _magicStarted;
-    private event Action<MagicEndedEvent> _magicEnded;
-
-    private void Awake()
-    {
-        _magicStarted = (e) => _spell.StartCast();
-        _magicEnded = (e) => _spell.StopCast();
-    }
+    private int _damage;
+    private IDisposable _magicStarted;
+    private IDisposable _magicEnded;
     
+    public void Initialize(int damage)
+    {
+        _damage = damage;
+    }
+
     private void OnEnable()
     {
-        EventManager.AddListener(_magicStarted);
-        EventManager.AddListener(_magicEnded);
+        _magicStarted = EventManager.Recieve<MagicStartedEvent>().Subscribe((e) => _spell.StartCast());
+        _magicEnded = EventManager.Recieve<MagicEndedEvent>().Subscribe((e) => _spell.StopCast());
     }
 
     private void OnDisable()
     {
-        EventManager.RemoveListener(_magicStarted);
-        EventManager.RemoveListener(_magicEnded);
+        _magicStarted?.Dispose();
+        _magicEnded?.Dispose();
+        _magicStarted = null;
+        _magicEnded = null;
     }
+
     public void CastSpell()
     {
         _spell.Cast(_castRoot);
