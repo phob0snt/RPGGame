@@ -1,7 +1,6 @@
 using System;
-using System.Threading.Tasks;
+using R3;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -14,16 +13,11 @@ public class PlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private float _sensivity = 1;
     [SerializeField] private float _smoothVelocityValue = 0.03f;
     [SerializeField] private CinemachineCamera _camera;
-    [SerializeField] private Transform _cameraWalkRoot;
-    [SerializeField] private Transform _cameraCrouchRoot;
-    [SerializeField] private float _crouchAnimDuration = 0.4f;
 
     private Player _player;
     private PlayerCombatController _combat;
-
     private float _currentSpeed;
 
-    private bool _isCrouching;
     
     private bool _isJumping;
 
@@ -41,18 +35,19 @@ public class PlayerController : MonoBehaviour, IPlayerController
     private StateMachine _stateMachine;
 
     private Vector2 _locomotionInput;
-    private Vector2 _cameraInput;
     private Vector2 _smoothDir;
     private Vector3 _velocity;
 
     private CharacterController _controller;
     [SerializeField] private Animator _animator;
-
-    private Sequence _startCrouchColliderSequence;
-    private Sequence _endCrouchColliderSequence;
     
     [SerializeField] private float _jumpForce = 5f;
     private bool _isGrounded;
+
+    private IDisposable _locomotionSubscription;
+    private IDisposable _jumpSubscription;
+    private IDisposable _runSubscription;
+    private IDisposable _pauseSubscription;
 
     private void Awake()
     {
@@ -70,33 +65,28 @@ public class PlayerController : MonoBehaviour, IPlayerController
 
     private void OnEnable()
     {
-        EventManager.AddListener<LocomotionEvent>(SetMovementDir);
-        EventManager.AddListener<MouseMoveEvent>(SetCameraInput);
-        EventManager.AddListener<CrouchPressEvent>((e) => ChangeCrouchState());
-        EventManager.AddListener<JumpEvent>((e) => Jump());
-        EventManager.AddListener<RunEvent>((e) => Run());
+        _locomotionSubscription = EventManager.Recieve<LocomotionEvent>().Subscribe(SetMovementDir);
+        _jumpSubscription = EventManager.Recieve<JumpEvent>().Subscribe(Jump);
+        _runSubscription = EventManager.Recieve<RunEvent>().Subscribe(Run);
     }
-
-    
 
     private void OnDisable()
     {
-        EventManager.RemoveListener<LocomotionEvent>(SetMovementDir);
-        EventManager.RemoveListener<MouseMoveEvent>(SetCameraInput);
-        EventManager.RemoveListener<CrouchPressEvent>((e) => ChangeCrouchState());
-        EventManager.RemoveListener<JumpEvent>((e) => Jump());
-        EventManager.RemoveListener<RunEvent>((e) => Run());
+        _locomotionSubscription?.Dispose();
+        _jumpSubscription?.Dispose();
+        _runSubscription?.Dispose();
+        _locomotionSubscription = null;
+        _jumpSubscription = null;
+        _runSubscription = null;
     }
 
     private void SetMovementDir(LocomotionEvent e) => _locomotionInput = e.LocomotionInput;
-    private void SetCameraInput(MouseMoveEvent e) => _cameraInput = e.MouseInput;
 
     private void ConfigureStateMachine()
     {
         _stateMachine = new StateMachine();
 
         var locomotionState = new LocomotionState(this, _animator);
-        var crouchState = new CrouchState(this, _animator);
         var idleState = new IdleState(this, _animator);
         var jumpState = new JumpState(this, _animator);
         var AttackState = new AttackState(this, _animator);
@@ -104,8 +94,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         var RunState = new RunState(this, _animator);
         var MagicState = new MagicState(this, _animator);
 
-        _stateMachine.AddTransition(locomotionState, crouchState, new FuncPredicate(() => _isCrouching));
-        _stateMachine.AddTransition(crouchState, locomotionState, new FuncPredicate(() => !_isCrouching));
+
         _stateMachine.AddTransition(locomotionState, idleState, new FuncPredicate(() => _locomotionInput == Vector2.zero));
         _stateMachine.AddTransition(idleState, locomotionState, new FuncPredicate(() => _locomotionInput != Vector2.zero));
         _stateMachine.AddAnyTransition(jumpState, new FuncPredicate(() => _isJumping));
@@ -143,21 +132,32 @@ public class PlayerController : MonoBehaviour, IPlayerController
         //}
     }
 
+    public Player GetPlayer()
+    {
+        return _player;
+    }
+
     public void CompleteAttack()
     {
         IsAttacking = false;
-        Debug.Log("COMPLETE ATTAK");
-        EventManager.Broadcast(Events.AttackEndedEvent);
+        AttackEndedEvent evt = new AttackEndedEvent
+        {
+            SenderID = _player.ID
+        };
+        EventManager.Broadcast(evt);
     }
 
     public void CompleteMagic()
     {
         IsMagic = false;
-        Debug.Log("COMPLETE Magic");
-        EventManager.Broadcast(Events.MagicEndedEvent);
+        MagicEndedEvent evt = new MagicEndedEvent
+        {
+            SenderID = _player.ID
+        };
+        EventManager.Broadcast(evt);
     }
 
-    public void Run()
+    private void Run(RunEvent evt)
     {
         _isRunning = true;
     }
@@ -167,7 +167,7 @@ public class PlayerController : MonoBehaviour, IPlayerController
         _isGrounded = _controller.isGrounded;
     }
 
-    public void Jump()
+    public void Jump(JumpEvent evt)
     {
         if (_isGrounded)
         {
