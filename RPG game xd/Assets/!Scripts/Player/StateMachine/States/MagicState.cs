@@ -6,7 +6,11 @@ public class MagicState : BasePlayerState
 
     public override void Enter()
     {
-        EventManager.Broadcast(Events.MagicStartedEvent);
+        MagicStartedEvent evt = new MagicStartedEvent
+        {
+            SenderID = _playerController.GetPlayer().ID
+        };
+        EventManager.Broadcast(evt);
         _animator.CrossFade("SpellCast", 0.1f);
     }
 }

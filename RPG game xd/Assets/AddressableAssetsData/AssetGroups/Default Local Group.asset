@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: eb5caa9dea0bfe14085799539051bb60
   m_SerializeEntries:
+  - m_GUID: 2c8020ffb1518f24184f512516f922c7
+    m_Address: BossEnemy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 53c5be822edb3784fbf803016ad81a78
     m_Address: PlayerConfig
     m_ReadOnly: 0
@@ -32,6 +37,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d99799fbbab1a5a4ba22684fadda6b6b
     m_Address: EnemyConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cffade7e3a253554c9d17e5f59dc1294
+    m_Address: WinSound
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

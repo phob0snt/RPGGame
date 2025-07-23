@@ -143,18 +143,39 @@ public class PlayerController : MonoBehaviour, IPlayerController
         //}
     }
 
+    public Player GetPlayer()
+    {
+        return _player;
+    }
+
     public void CompleteAttack()
     {
         IsAttacking = false;
+<<<<<<< Updated upstream
         Debug.Log("COMPLETE ATTAK");
         EventManager.Broadcast(Events.AttackEndedEvent);
+=======
+        AttackEndedEvent evt = new AttackEndedEvent
+        {
+            SenderID = _player.ID
+        };
+        EventManager.Broadcast(evt);
+>>>>>>> Stashed changes
     }
 
     public void CompleteMagic()
     {
         IsMagic = false;
+<<<<<<< Updated upstream
         Debug.Log("COMPLETE Magic");
         EventManager.Broadcast(Events.MagicEndedEvent);
+=======
+        MagicEndedEvent evt = new MagicEndedEvent
+        {
+            SenderID = _player.ID
+        };
+        EventManager.Broadcast(evt);
+>>>>>>> Stashed changes
     }
 
     public void Run()

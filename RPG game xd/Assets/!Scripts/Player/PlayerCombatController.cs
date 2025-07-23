@@ -35,7 +35,7 @@ public class PlayerCombatController : MonoBehaviour
 
     public async void Attack()
     {
-        if(_controller.IsAttacking)
+        if (_controller.IsAttacking)
             return;
 
         await Task.Yield();
@@ -44,7 +44,7 @@ public class PlayerCombatController : MonoBehaviour
 
     public async void Magic()
     {
-        if(_controller.IsMagic)
+        if (_controller.IsMagic || !_player.CanDoMagic)
             return;
             
         await Task.Yield();

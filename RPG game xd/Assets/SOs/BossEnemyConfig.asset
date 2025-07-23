@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9a257103f421d44dafa673095f79dd5, type: 3}
-  m_Name: PlayerConfig
+  m_Script: {fileID: 11500000, guid: 282c918d79e058f428a04819febe4d12, type: 3}
+  m_Name: BossEnemyConfig
   m_EditorClassIdentifier: 
-  <HP>k__BackingField: 100
-  <SwordDamage>k__BackingField: 25
-  <MagicDamage>k__BackingField: 40
+  <HP>k__BackingField: 200
+  <RunawayThreshold>k__BackingField: -1
+  <SwordDamage>k__BackingField: 12
+  <AttackRange>k__BackingField: 5
+  <MagicDamage>k__BackingField: 20
