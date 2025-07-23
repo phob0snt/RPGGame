@@ -11,17 +11,24 @@ public class Spell : MonoBehaviour
     dynamic ХорхеИнт = 10;
     dynamic ХорхеБул = true;
     dynamic ХорхеФлоат = 10.5f;
-#endregion
-    
-    private bool canExplode = false;
-    private const float EXPLODE_TIMER = 0.1f;
+    #endregion
+
+    private bool canExplode = true;
+    private const float EXPLODE_TIMER = 0f;
+    private string _senderID;
+    private MagicElement _element;
 
     private void Start()
     {
         StartCoroutine(EnableExplosionAfterDelay());
     }
 
-    public void SetDamage(int damage) => _damage = damage;
+    public void Initialize(int damage, string id, MagicElement element)
+    {
+        _element = element;
+        _damage = damage;
+        _senderID = id;
+    }
 
     private IEnumerator EnableExplosionAfterDelay()
     {
@@ -33,11 +40,20 @@ public class Spell : MonoBehaviour
     {
         if (!canExplode) return;
 
-        if (other.gameObject.CompareTag("Enemy"))
+        Health health = other.gameObject.GetComponentInParent<Health>();
+        IEntity entity = other.gameObject.GetComponentInParent<IEntity>();
+
+        if (health != null && entity != null)
         {
-            other.gameObject.GetComponent<Health>().TakeDamage(_damage);
+            if (entity.ID == _senderID)
+                return;
+            health.TakeDamage(_damage);
         }
-        Instantiate(_explodeParticle, transform.position, Quaternion.identity);
+
+        Debug.Log("spell collided with " + other.gameObject.name);
+
+        ParticleSystem explode = Instantiate(_explodeParticle, transform.position, Quaternion.identity);
+        explode.transform.localScale = Vector3.one * 0.4f;
         Destroy(gameObject);
     }
 }

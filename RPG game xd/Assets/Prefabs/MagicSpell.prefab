@@ -5193,7 +5193,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.6603774, g: 0.6603774, b: 0.6603774, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -6282,7 +6282,7 @@ ParticleSystem:
         key1: {r: 1, g: 0.80558854, b: 0.305, a: 1}
         key2: {r: 0.7372549, g: 0.38244438, b: 0.20784314, a: 1}
         key3: {r: 0.1882353, g: 0.10617304, b: 0, a: 1}
-        key4: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0.18823528, g: 0.10617304, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
@@ -6290,7 +6290,7 @@ ParticleSystem:
         ctime1: 16384
         ctime2: 39321
         ctime3: 52428
-        ctime4: 52685
+        ctime4: 53392
         ctime5: 0
         ctime6: 0
         ctime7: 0
@@ -6303,7 +6303,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_ColorSpace: -1
+        m_ColorSpace: 0
         m_NumColorKeys: 4
         m_NumAlphaKeys: 2
       minGradient:
@@ -9750,8 +9750,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fabf9fea55ffc145896932c846bc79a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spellPrefab: {fileID: 8084320026451276509, guid: 93359d1b0d3d4ca4d8b454df433b5c0e, type: 3}
-  damage: 10
+  _spellPrefab: {fileID: 0}
+  _mainParticle: {fileID: 0}
+  _subParticle: {fileID: 0}
+  _cooldown: 2
+  _light: {fileID: 0}
 --- !u!199 &4415120269535655401
 ParticleSystemRenderer:
   serializedVersion: 6

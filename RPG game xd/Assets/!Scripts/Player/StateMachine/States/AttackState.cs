@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using DG.Tweening;
 using UnityEngine;
 
 public class AttackState : BasePlayerState
@@ -10,7 +8,12 @@ public class AttackState : BasePlayerState
     
     public override void Enter()
     {
-        EventManager.Broadcast(Events.AttackStartedEvent);
+        AttackStartedEvent evt = new AttackStartedEvent
+        {
+            SenderID = _playerController.GetPlayer().ID
+        };
+  
+        EventManager.Broadcast(evt);
         _animator.CrossFade("MeleeAttack_OneHanded", 0.1f);
     }
 }
